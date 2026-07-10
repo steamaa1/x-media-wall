@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>媒体墙 · @imengyuyzc + @tianzhong_sub</title>
+<style>
+  :root{
+    --bg:#0e0f13; --panel:#171923; --text:#e7e9ee; --sub:#9aa3b2;
+    --accent:#7c9cff; --accent-2:#ff8ad0; --radius:16px; --gap:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 600px at 80% -10%,#23203a 0%,transparent 60%),var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    min-height:100vh; padding:24px 20px 80px; -webkit-font-smoothing:antialiased;
+  }
+  header{max-width:1300px;margin:0 auto 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header h1{font-size:22px;margin:0;line-height:1.2}
+  header .sub{color:var(--sub);font-size:13px;margin-top:2px}
+  header .sub a{color:var(--accent);text-decoration:none}
+  .avatars{display:flex;gap:8px}
+  .avatars .ava{width:48px;height:48px;border-radius:50%;border:2px solid #2c3050;background-size:cover;background-position:center}
+  .toolbar{
+    max-width:1300px;margin:0 auto 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+    background:var(--panel);border:1px solid #262a3a;padding:14px 16px;border-radius:var(--radius);
+    position:sticky;top:12px;z-index:20;
+  }
+  .tabs{display:inline-flex;background:#11131c;border-radius:10px;padding:4px;gap:4px;border:1px solid #262a3a}
+  .tabs button{
+    appearance:none;border:0;background:transparent;color:var(--sub);cursor:pointer;
+    padding:9px 16px;border-radius:8px;font-size:14px;font-weight:600;transition:.18s;
+  }
+  .tabs button:hover{color:var(--text)}
+  .tabs button.active{background:linear-gradient(180deg,#2a2f48,#222639);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .acct-sel{display:inline-flex;gap:6px;flex-wrap:wrap}
+  .acct-sel button{
+    appearance:none;border:1px solid #313646;background:#11131c;color:var(--sub);cursor:pointer;
+    padding:8px 14px;border-radius:20px;font-size:13px;transition:.15s;
+  }
+  .acct-sel button:hover{color:var(--text);border-color:#4a5266}
+  .acct-sel button.active{background:#222639;color:#fff;border-color:#4a5278}
+  .spacer{flex:1}
+  .count{color:var(--sub);font-size:13px}
+  .count b{color:var(--text)}
+  .btn{
+    appearance:none;border:1px solid #3a412f;background:#1b2417;color:#cfe7b0;cursor:pointer;
+    padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;transition:.15s;
+  }
+  .btn:hover{background:#222e1d;border-color:#5a7036}
+  .btn.alt{border-color:#3a2f52;background:#221a33;color:#e2c6ff}
+  .btn.alt:hover{background:#2c2142;border-color:#5a3a82}
+  .btn.ghost{background:transparent;border-color:#313646;color:var(--sub)}
+  .btn.ghost:hover{color:var(--text);border-color:#3a412f;background:#171c28}
+  select{background:#11131c;color:var(--text);border:1px solid #313646;border-radius:10px;padding:9px;font-size:13px}
+  .grid{
+    max-width:1300px;margin:0 auto;display:grid;gap:var(--gap);
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  }
+  .card{
+    position:relative;overflow:hidden;border-radius:var(--radius);cursor:zoom-in;
+    background:#1a1d28;border:1px solid #262a3a;aspect-ratio:3/4;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s;
+  }
+  .card:hover{transform:translateY(-3px);border-color:#3a412f;box-shadow:0 10px 26px rgba(0,0,0,.45)}
+  .card img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .25s}
+  .video-grid .card{aspect-ratio:9/16;cursor:default}
+  .video-grid .card video{width:100%;height:100%;object-fit:contain;display:block;background:#050507}
+  .video-grid .card:hover{transform:none}
+  .card.loading img{filter:blur(10px) brightness(.6)}
+  .card .tag{
+    position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;
+    padding:2px 8px;border-radius:20px;backdrop-filter:blur(4px);opacity:0;transition:.2s;
+  }
+  .card:hover .tag{opacity:1}
+  .card .idx{
+    position:absolute;left:8px;top:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;
+    padding:2px 8px;border-radius:20px;backdrop-filter:blur(4px);opacity:0;transition:.2s;
+  }
+  .card:hover .idx{opacity:1}
+  .empty{max-width:1300px;margin:40px auto;text-align:center;color:var(--sub)}
+  .lightbox{position:fixed;inset:0;background:rgba(6,7,12,.92);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
+  .lightbox.show{display:flex}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 18px 60px rgba(0,0,0,.6);user-select:none}
+  .lb-close{position:absolute;top:16px;right:22px;font-size:30px;color:#fff;cursor:pointer;line-height:1;opacity:.8}
+  .lb-close:hover{opacity:1}
+  .lb-nav{position:absolute;top:50%;transform:translateY(-50%);font-size:34px;color:#fff;cursor:pointer;opacity:.7;user-select:none}
+  .lb-nav:hover{opacity:1}
+  .lb-prev{left:18px}.lb-next{right:18px}
+  .lb-info{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:var(--sub);font-size:12px}
+  footer{max-width:1300px;margin:30px auto 0;color:#5a6275;font-size:12px;text-align:center}
+</style>
+</head>
+<body>
+  <header>
+    <div class="avatars">
+      <div class="ava" style="background-image:url('https://pbs.twimg.com/profile_images/1896043602234785795/jcoKD-Js_200x200.jpg')" title="@imengyuyzc"></div>
+      <div class="ava" style="background-image:url('https://pbs.twimg.com/profile_images/1745740404656672769/6ECJ8xJa_400x400.jpg')" title="@tianzhong_sub"></div>
+    </div>
+    <div>
+      <h1>媒体墙 · 两个账号</h1>
+      <div class="sub">@imengyuyzc + @tianzhong_sub · <b id="total">0</b> 张图片 · <b id="videoTotal">0</b> 个视频 · <a href="https://x.com/imengyuyzc" target="_blank" rel="noopener">imengyuyzc</a> / <a href="https://x.com/tianzhong_sub" target="_blank" rel="noopener">tianzhong_sub</a></div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="tabs">
+      <button id="tab-all" class="active" type="button">全部图片</button>
+      <button id="tab-random" type="button">随机图片</button>
+      <button id="tab-video" type="button">视频</button>
+    </div>
+    <div class="acct-sel" id="acctSel">
+      <button class="active" data-acct="all" type="button">全部账号</button>
+      <button data-acct="imeng" type="button">@imengyuyzc</button>
+      <button data-acct="tian" type="button">@tianzhong_sub</button>
+    </div>
+    <div class="spacer"></div>
+    <span class="count">显示 <b id="shown">0</b> / <b id="total2">0</b></span>
+    <select id="randCount">
+      <option value="6">随机 6 张</option>
+      <option value="9">随机 9 张</option>
+      <option value="12" selected>随机 12 张</option>
+      <option value="18">随机 18 张</option>
+      <option value="24">随机 24 张</option>
+    </select>
+    <button id="shuffle" class="btn alt" type="button">重新随机</button>
+    <button id="downloadTxt" class="btn ghost" type="button">导出直链</button>
+  </div>
+
+  <div id="grid" class="grid"></div>
+  <div id="videoGrid" class="grid video-grid" style="display:none"></div>
+  <div id="empty" class="empty" style="display:none">暂无媒体</div>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lb-close" id="lbClose" title="关闭 (Esc)">&times;</div>
+    <div class="lb-nav lb-prev" id="lbPrev" title="上一张">&lsaquo;</div>
+    <img id="lbImg" src="" alt="">
+    <div class="lb-nav lb-next" id="lbNext" title="下一张">&rsaquo;</div>
+    <div class="lb-info" id="lbInfo"></div>
+  </div>
+
+  <footer>图片来源于 pbs.twimg.com，视频来源于 video.twimg.com；仅做聚合展示，版权归原作者所有。</footer>
+
+<script>
+// 媒体直链数据（按 media ID 去重，已应用 excluded_images.txt）
+// IMENG = @imengyuyzc (151张), TIAN = @tianzhong_sub (17张), VIDEOS = 7个
+const IMAGES = {
+  imeng: [
+    "https://pbs.twimg.com/media/GvVkO5lW8AAP4Gw?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvVkO4zbQAA3IT0?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvVkO4faYAAWN1W?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvVjpFzXsAAn6h4?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvVjo1RW0AAh9uz?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvVjo1RW0AEDpk3?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvVjozOaYAAx2_N?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvGYGnra0AAmxCa?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvGYGn_bkAA0i7N?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvGYGoQWsAA210l?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvGYGnJacAApse-?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvFY-WyWcAADHJZ?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvFZCtdboAARhiv?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvFZMC4XsAAvko0?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvFZMCWWYAAFtlE?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvFXrPlWUAAY0Gg?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvFXrPgXIAAdt5d?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvFXrPXXIAAg8v1?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GvFXrPBaAAA1vEI?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gu2qq91WcAA-HDg?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gu2qtTzW8AA7C4a?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gu2q5h8WwAAgy_v?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GusQ7eMXUAA3RFE?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GusQ7e3XsAAvhOj?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GuiVyDOXwAAIOgI?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GuiU1vUaMAA_u2K?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GuiU1vXaoAM2bWQ?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GuiU1vsXMAA2aNa?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gt7usGLXkAA6oOA?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gt7usF6bwAAU7In?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gt7usGZWEAAv1gf?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gt7usGNWUAAvTjj?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GmKo7rUbYAA6npK?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GlH9WXSagAA_-xd?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GlH9jdgbcAAjYQ-?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GlH-lVxbUAEhSWw?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GlH-ngBakAE3c9f?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GlAcWXYaoAAxkTW?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G87w5S7a8AE1XK8?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G87w5UBaYAA4hH2?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G87w6J1akAA0fbB?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G87w6suaAAAFekK?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G8xP42ebUAAjL2N?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G8xP592boAAgdCM?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G8xP9tea4AAd-Q1?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G8xQCu1asAEqhOc?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G8ikjyRa0AAQluX?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G8ikpNCbAAARS4C?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G8iktHIaIAAwSf4?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G8ikttNbkAAxGYo?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G5ebrtaa0AAW15G?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G5ebsK2aIAIvu5h?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G5ebtRWbgAIRxXF?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G5ebujXaMAA4UuG?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G5ebVGlakAARJtP?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G5ebWFObcAwRlIy?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G5ebW24bcAMskXr?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G5ebXcdagAAGfJI?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G2Boi3haQAAyp_3?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G2BokBJbAAAeVZx?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G2BokiPbEAAVMIg?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G2BolGqb0AAH7NI?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G2Bob6ZbIAA9kAr?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G2Bob6va4AAjp11?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G2BocYdbcAAxw6W?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G0VCT15bMAAMMs8?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G0VCUvfaQAAf2lf?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G0VCXrIbUAA1FvT?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G0VCd9JaEAE08k5?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G0VCBWobEAAjZXP?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G0VCBWoa4AA6upv?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G0VCBWsbEAAq5-l?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gyet2B4aAAAEits?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gyet2BTagAAYk0A?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gyet2BtaUAAuQDb?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwoGMoAb0AALPnq?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwoGOj6bYAACEFO?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwoGb5cbkAA187X?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwoGtQmakAAN6Gh?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwoF2xobkAAUK8d?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwoF3BobMAEQj3_?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwoF45QbMAANP2x?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwQ6UK-WIAAakmU?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwQ6XU7XUAAeFr8?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwQ6cGJbUAIGw6P?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwQ6cHRbkAADE8q?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwQ4piHXAAA7eCN?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwQ466xWoAAbGoO?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwQ4_u5WUAAzhKL?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GwQ5CUDXsAMXN3X?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gvf2IyAaUAAKTz3?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gvf2Iz9XoAERJUM?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Gvf2Iy5aUAAjYRr?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhZdvakAEoJoA?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhZdkbwAAh7US?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhZdxasAAn46K?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhMH-bAAAl9_g?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhMICbMAEOERT?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhMIHa4AAqXe6?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhMIMbYAA8DvA?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhFCAasAECGcp?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhFCCaYAAVHgh?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HMyhFCOagAAFWnV?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiha1bQAAstVT?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiha0bsAAJStk?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiiYAbwAAOs6w?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiUeIbkAALXtb?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiUs3bsAAHoHV?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiVGDaYAAMqVn?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiJjuakAAQesy?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiKpGacAAxwUB?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiMdvasAAbNyC?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiNmraQAA5deV?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiDMYbMAExKLF?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiEC1bMAAhqnD?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HKqiE5fb0AAyYBu?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIct6JgbIAEcmvL?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIct6JnbYAAG1XP?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIcs1oWacAAuXa_?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIcs1pNbcAAnpsY?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIcsxh9bsAEHYhM?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIcsxvracAAn_Gt?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIcsxwQakAABnpO?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIcsDIobAAAfagb?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIcsDInbYAAVw9A?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIcsDJLbYAAAGvi?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HIcsDOna4AAQYJr?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HDnQVwobEAEaYkE?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HDnQWZRbEAA3AlE?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HDnQW-Ba4AAwmi0?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HDnQIl8bEAQXKN6?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HDnQJjLbgAAmK9r?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HDnQKKXaYAAz357?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HBkxhHcbIAAWO1L?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/HBkxh5DbUAMgyDQ?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B5QX_XMAAZAKk?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B5Q3pbAAAyNr9?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B5sW_XEAAr9nj?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B5sbjWsAAgAoQ?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B4lHbW8AAPfLO?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B4lJdWEAAaNcZ?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B4mA2WMAAyhad?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B4mwZXgAAvFYP?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B4FoFXoAA36Z0?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B4GgoXwAAiGm6?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B4HLHWgAAxZbJ?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B4HwYW0AE49s7?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B37i4WgAEjJHB?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B37pBXYAADH-E?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B38VOXoAAH9Md?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/G_B387PXAAAoVh5?format=jpg&name=orig",
+  ],
+  tian: [
+    "https://pbs.twimg.com/media/FuN86sUaEAMyrny?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/F3leYQ1aMAAdLRZ?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Fqn0efnX0Ac9VxE?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/FuN9OUiaUAIMmLH?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/FuYCs2nacAMzLVC?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/FuYCsgeaQAQ533e?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/FuZBDiwakAI_6CD?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Fuc0tyeaUAE0ZEt?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Fuc0uKhakAAg446?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Fudnd52aIAAcIEe?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/FudndeCaEAAhWYz?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Fukmy2maAAgUtZr?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/FukmycoacAQWh0p?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Fuo_G5HagAETRh1?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/Fuo_GcHaEAYlCeI?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/FuyljL7aQAAhkiu?format=jpg&name=orig",
+    "https://pbs.twimg.com/media/GMuUzbwb0AAYO4u?format=jpg&name=orig",
+  ]
+};
+
+const VIDEOS = [
+  "https://video.twimg.com/amplify_video/1988229140248752129/vid/avc1/720x1280/K6lyc40fQ5Mc3iDp.mp4?tag=14",
+  "https://video.twimg.com/amplify_video/1988229041992957952/vid/avc1/720x1280/gZg8LskpI48mHpXq.mp4?tag=14",
+  "https://video.twimg.com/amplify_video/1988228676002213888/vid/avc1/720x1280/CSs_dPiymJ-5vmVm.mp4?tag=14",
+  "https://video.twimg.com/amplify_video/1943292357002072065/vid/avc1/720x1280/sMlTGAmRwXA10GOe.mp4?tag=14",
+  "https://video.twimg.com/amplify_video/2075210987159093248/vid/avc1/720x1598/OPcdI17rriYysGpB.mp4?tag=14",
+  "https://video.twimg.com/amplify_video/2055662231824814080/vid/avc1/720x960/1-GjFbkC86wFsCQJ.mp4?tag=14",
+  "https://video.twimg.com/amplify_video/2055662231829065728/vid/avc1/720x960/Ln4ak5UlMrO3qVzO.mp4?tag=14",
+];
+</script>
+<script>
+var ALL_IMAGES = IMAGES.imeng.concat(IMAGES.tian);
+var TAG_MAP = {};
+IMAGES.imeng.forEach(function(u){ TAG_MAP[u] = '@imengyuyzc'; });
+IMAGES.tian.forEach(function(u){ TAG_MAP[u] = '@tianzhong_sub'; });
+
+var grid = document.getElementById('grid');
+var videoGrid = document.getElementById('videoGrid');
+var emptyEl = document.getElementById('empty');
+var totalEl = document.getElementById('total');
+var videoTotalEl = document.getElementById('videoTotal');
+var total2El = document.getElementById('total2');
+var shownEl = document.getElementById('shown');
+var tabAll = document.getElementById('tab-all');
+var tabRandom = document.getElementById('tab-random');
+var tabVideo = document.getElementById('tab-video');
+var acctSel = document.getElementById('acctSel');
+var randCountSel = document.getElementById('randCount');
+var shuffleBtn = document.getElementById('shuffle');
+var dlBtn = document.getElementById('downloadTxt');
+
+totalEl.textContent = ALL_IMAGES.length;
+videoTotalEl.textContent = VIDEOS.length;
+total2El.textContent = ALL_IMAGES.length;
+
+var mode = 'all';
+var acct = 'all';
+var current = [];
+
+function thumb(url){
+  var m = url.match(/media\/([A-Za-z0-9_-]+)/);
+  return m ? 'https://pbs.twimg.com/media/' + m[1] + '?format=jpg&name=medium' : url;
+}
+
+function getPool(){
+  if(acct === 'all') return ALL_IMAGES.slice();
+  if(acct === 'imeng') return IMAGES.imeng.slice();
+  return IMAGES.tian.slice();
+}
+
+function render(urls){
+  grid.innerHTML = '';
+  current = urls.slice();
+  shownEl.textContent = urls.length;
+  emptyEl.style.display = urls.length ? 'none' : 'block';
+  urls.forEach(function(u, i){
+    var card = document.createElement('div');
+    card.className = 'card loading';
+    card.setAttribute('data-i', i);
+    var img = new Image();
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.alt = 'image ' + (i+1);
+    img.onload = function(){ card.classList.remove('loading'); };
+    img.onerror = function(){ card.classList.remove('loading'); card.style.opacity = '.4'; };
+    img.src = thumb(u);
+    card.appendChild(img);
+    var idx = document.createElement('span');
+    idx.className = 'idx';
+    idx.textContent = (i+1);
+    card.appendChild(idx);
+    var tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = TAG_MAP[u] || '';
+    card.appendChild(tag);
+    card.addEventListener('click', function(){ openLightbox(i); });
+    grid.appendChild(card);
+  });
+}
+
+function shuffleArr(a){ for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+
+function showAll(){
+  mode = 'all';
+  grid.style.display = 'grid'; videoGrid.style.display = 'none';
+  tabAll.classList.add('active'); tabRandom.classList.remove('active'); tabVideo.classList.remove('active');
+  acctSel.style.display = 'inline-flex'; randCountSel.style.display = ''; shuffleBtn.style.display = '';
+  total2El.textContent = getPool().length;
+  render(getPool());
+}
+function showRandom(){
+  mode = 'random';
+  grid.style.display = 'grid'; videoGrid.style.display = 'none';
+  tabRandom.classList.add('active'); tabAll.classList.remove('active'); tabVideo.classList.remove('active');
+  acctSel.style.display = 'inline-flex'; randCountSel.style.display = ''; shuffleBtn.style.display = '';
+  var n = parseInt(randCountSel.value, 10) || 12;
+  var pool = shuffleArr(getPool());
+  total2El.textContent = pool.length;
+  render(pool.slice(0, Math.min(n, pool.length)));
+}
+function showVideos(){
+  mode = 'video';
+  grid.style.display = 'none'; videoGrid.style.display = 'grid'; emptyEl.style.display = VIDEOS.length ? 'none' : 'block';
+  tabVideo.classList.add('active'); tabAll.classList.remove('active'); tabRandom.classList.remove('active');
+  acctSel.style.display = 'none'; randCountSel.style.display = 'none'; shuffleBtn.style.display = 'none';
+  shownEl.textContent = VIDEOS.length; total2El.textContent = VIDEOS.length;
+  videoGrid.innerHTML = '';
+  VIDEOS.forEach(function(url,i){
+    var card=document.createElement('div'); card.className='card';
+    var v=document.createElement('video'); v.controls=true; v.preload='metadata'; v.playsInline=true; v.src=url;
+    card.appendChild(v);
+    var idx=document.createElement('span'); idx.className='idx'; idx.textContent=(i+1); idx.style.opacity='1'; card.appendChild(idx);
+    var tag=document.createElement('span'); tag.className='tag'; tag.textContent='@imengyuyzc · 视频'; tag.style.opacity='1'; card.appendChild(tag);
+    videoGrid.appendChild(card);
+  });
+}
+
+tabAll.addEventListener('click', showAll);
+tabRandom.addEventListener('click', showRandom);
+tabVideo.addEventListener('click', showVideos);
+shuffleBtn.addEventListener('click', showRandom);
+randCountSel.addEventListener('change', function(){ if(mode === 'random') showRandom(); });
+
+acctSel.addEventListener('click', function(e){
+  var btn = e.target.closest('button[data-acct]');
+  if(!btn) return;
+  acct = btn.getAttribute('data-acct');
+  acctSel.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  if(mode === 'random') showRandom(); else showAll();
+});
+
+dlBtn.addEventListener('click', function(){
+  var pool = mode === 'video' ? VIDEOS.slice() : getPool();
+  var txt = pool.join('\n');
+  var blob = new Blob([txt], {type:'text/plain'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = mode === 'video' ? 'videos_imengyuyzc.txt' : 'images_' + acct + '.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+});
+
+var lb = document.getElementById('lightbox');
+var lbImg = document.getElementById('lbImg');
+var lbClose = document.getElementById('lbClose');
+var lbPrev = document.getElementById('lbPrev');
+var lbNext = document.getElementById('lbNext');
+var lbInfo = document.getElementById('lbInfo');
+var lbIndex = 0;
+
+function openLightbox(i){
+  lbIndex = i;
+  updateLightbox();
+  lb.classList.add('show');
+}
+function closeLightbox(){ lb.classList.remove('show'); lbImg.src = ''; }
+function updateLightbox(){
+  var u = current[lbIndex];
+  lbImg.src = u;
+  lbInfo.textContent = (lbIndex+1) + ' / ' + current.length + (TAG_MAP[u] ? '  ·  ' + TAG_MAP[u] : '');
+}
+lbClose.addEventListener('click', closeLightbox);
+lbPrev.addEventListener('click', function(e){ e.stopPropagation(); lbIndex=(lbIndex-1+current.length)%current.length; updateLightbox(); });
+lbNext.addEventListener('click', function(e){ e.stopPropagation(); lbIndex=(lbIndex+1)%current.length; updateLightbox(); });
+lb.addEventListener('click', function(e){ if(e.target === lb) closeLightbox(); });
+document.addEventListener('keydown', function(e){
+  if(!lb.classList.contains('show')) return;
+  if(e.key === 'Escape') closeLightbox();
+  else if(e.key === 'ArrowLeft'){ lbIndex=(lbIndex-1+current.length)%current.length; updateLightbox(); }
+  else if(e.key === 'ArrowRight'){ lbIndex=(lbIndex+1)%current.length; updateLightbox(); }
+});
+
+showAll();
+</script>
+</body>
+</html>

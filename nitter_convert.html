@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nitter 图片和视频链接转换器</title>
+<style>
+body{margin:0;background:#101116;color:#eee;font-family:Arial,"Microsoft YaHei",sans-serif;padding:16px;line-height:1.55}h1{font-size:22px;margin:0 0 8px}.tip{color:#aaa;font-size:14px;margin:8px 0 14px}textarea{width:100%;min-height:260px;background:#1b1d27;color:#eee;border:1px solid #3a4053;border-radius:10px;padding:12px;box-sizing:border-box;font-family:Consolas,monospace;font-size:13px}button{margin:10px 8px 8px 0;padding:10px 14px;border:0;border-radius:9px;background:#2e7d32;color:#fff;font-weight:bold}button.secondary{background:#3949ab}button.danger{background:#7b1f1f}.stat{color:#bbb;margin:8px 0}.out{white-space:pre-wrap;word-break:break-all;background:#1b1d27;border:1px solid #3a4053;border-radius:10px;padding:12px;min-height:130px;font-family:Consolas,monospace;font-size:12px}.preview{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:8px;margin-top:12px}.preview img,.preview video{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:8px;background:#222}.small{font-size:12px;color:#888}.section{margin-top:16px}.section h3{font-size:15px;margin:0 0 7px}.video-preview video{aspect-ratio:16/9}</style>
+</head>
+<body>
+<h1>Nitter 图片和视频链接转换器</h1>
+<div class="tip">粘贴 Nitter 页面源码、图片/视频链接或官方 twimg 链接，点击“转换”。工具会还原官方图片原图、Twitter MP4/M3U8 视频直链，并自动去重；同一视频有多个 MP4 清晰度时优先保留分辨率最高的版本。</div>
+<textarea id="inp" placeholder="图片：/pic/media%2FGwQ4piHXAAA7eCN.jpg%3Fname%3Dsmall&#10;视频：/pic/video.twimg.com%2Fext_tw_video%2F123%2Fpu%2Fvid%2F720x1280%2Fabc.mp4"></textarea>
+<br>
+<button onclick="convertLinks()">转换</button>
+<button class="secondary" onclick="copyAllResult()">复制全部结果</button>
+<button class="secondary" onclick="copyImages()">复制图片</button>
+<button class="secondary" onclick="copyVideos()">复制视频</button>
+<button class="secondary" onclick="fillTest()">填入测试</button>
+<button class="danger" onclick="clearAll()">清空</button>
+<div id="stat" class="stat">等待输入。</div>
+<div class="section"><h3>图片官方原图直链</h3><div id="imageOut" class="out"></div></div>
+<div class="section"><h3>视频官方直链</h3><div id="videoOut" class="out"></div></div>
+<div class="section"><h3>视频封面直链</h3><div id="thumbOut" class="out"></div></div>
+<div class="small">图片预览：</div>
+<div id="imagePreview" class="preview"></div>
+<div class="small section">视频预览：</div>
+<div id="videoPreview" class="preview video-preview"></div>
+<script>
+var imageResult='';
+var videoResult='';
+var thumbResult='';
+var allResult='';
+function addUnique(arr,seen,value){if(value&&!seen[value]){seen[value]=1;arr.push(value)}}
+function decodeInput(s){
+  s=String(s||'').replace(/&amp;/g,'&').replace(/&quot;/g,'"').replace(/&#x2F;/gi,'/').replace(/&#47;/g,'/').replace(/\\u002F/gi,'/').replace(/\\\//g,'/');
+  var all=s;
+  try{var d1=decodeURIComponent(s);if(d1!==s)all+='\n'+d1;try{var d2=decodeURIComponent(d1);if(d2!==d1)all+='\n'+d2}catch(e2){}}catch(e1){}
+  return all;
+}
+function extractImageIds(text){
+  var ids=[],seen={},m,re;
+  re=/media%2F([A-Za-z0-9_-]+)/gi;while((m=re.exec(text)))addUnique(ids,seen,m[1]);
+  re=/(?:pbs\.twimg\.com\/)?media\/([A-Za-z0-9_-]+)/gi;while((m=re.exec(text)))addUnique(ids,seen,m[1]);
+  return ids;
+}
+function cleanUrl(url){
+  return url.replace(/&amp;/g,'&').replace(/[),.;]+$/g,'').replace(/%3F/gi,'?').replace(/%3D/gi,'=').replace(/%26/gi,'&').replace(/%2F/gi,'/').replace(/%3A/gi,':');
+}
+function extractRawVideos(text){
+  var urls=[],seen={},m,re;
+  re=/(?:https?:\/\/)?video\.twimg\.com\/[A-Za-z0-9_~!$&'()*+,;=:@%./?-]+?(?:\.mp4|\.m3u8)(?:\?[A-Za-z0-9_~!$&'()*+,;=:@%./?-]*)?/gi;
+  while((m=re.exec(text))){var u=cleanUrl(m[0]);if(u.indexOf('http')!==0)u='https://'+u;addUnique(urls,seen,u)}
+  return urls;
+}
+function videoKey(url){var m=url.match(/(?:ext_tw_video|amplify_video)\/(\d+)/i);return m?m[1]:url.replace(/[?#].*$/,'')}
+function videoScore(url){var m=url.match(/\/(\d+)x(\d+)\//);if(m)return parseInt(m[1],10)*parseInt(m[2],10);m=url.match(/[?&](?:bitrate|br)=(\d+)/i);return m?parseInt(m[1],10):0}
+function chooseBestVideos(urls){
+  var groups={},order=[];
+  urls.forEach(function(u){var k=videoKey(u);if(!groups[k]){groups[k]=[];order.push(k)}groups[k].push(u)});
+  var out=[];
+  order.forEach(function(k){var list=groups[k],mp4=[],hls=[];list.forEach(function(u){if(/\.mp4(?:\?|$)/i.test(u))mp4.push(u);else hls.push(u)});if(mp4.length){mp4.sort(function(a,b){return videoScore(b)-videoScore(a)});out.push(mp4[0])}else if(hls.length)out.push(hls[0])});
+  return out;
+}
+function extractThumbs(text){
+  var urls=[],seen={},m,re;
+  re=/(?:https?:\/\/)?pbs\.twimg\.com\/(?:ext_tw_video_thumb|amplify_video_thumb)\/[A-Za-z0-9_~!$&'()*+,;=:@%./?-]+?(?:\.jpg|\.jpeg|\.png|\.webp)(?:\?[A-Za-z0-9_~!$&'()*+,;=:@%./?-]*)?/gi;
+  while((m=re.exec(text))){var u=cleanUrl(m[0]);if(u.indexOf('http')!==0)u='https://'+u;addUnique(urls,seen,u)}
+  return urls;
+}
+function imageOfficial(id){return 'https://pbs.twimg.com/media/'+id+'?format=jpg&name=orig'}
+function imageThumb(id){return 'https://pbs.twimg.com/media/'+id+'?format=jpg&name=medium'}
+function convertLinks(){
+  var text=decodeInput(document.getElementById('inp').value);
+  var imageIds=extractImageIds(text);
+  var videos=chooseBestVideos(extractRawVideos(text));
+  var thumbs=extractThumbs(text);
+  var images=imageIds.map(imageOfficial);
+  imageResult=images.join('\n');videoResult=videos.join('\n');thumbResult=thumbs.join('\n');
+  var all=[];if(images.length)all.push('【图片】\n'+imageResult);if(videos.length)all.push('【视频】\n'+videoResult);if(thumbs.length)all.push('【视频封面】\n'+thumbResult);allResult=all.join('\n\n');
+  document.getElementById('stat').innerHTML='提取到 <b>'+images.length+'</b> 张图片、<b>'+videos.length+'</b> 个视频、<b>'+thumbs.length+'</b> 张视频封面。结果均已去重。';
+  document.getElementById('imageOut').textContent=imageResult||'没有匹配到图片。';
+  document.getElementById('videoOut').textContent=videoResult||'没有匹配到 MP4/M3U8 视频。注意：只有页面源码包含 video.twimg.com 地址时才能直接转换。';
+  document.getElementById('thumbOut').textContent=thumbResult||'没有匹配到视频封面。';
+  var ip=document.getElementById('imagePreview');ip.innerHTML='';imageIds.slice(0,60).forEach(function(id){var img=new Image();img.loading='lazy';img.src=imageThumb(id);ip.appendChild(img)});
+  var vp=document.getElementById('videoPreview');vp.innerHTML='';videos.slice(0,12).forEach(function(url){var v=document.createElement('video');v.controls=true;v.preload='metadata';v.src=url;vp.appendChild(v)});
+}
+function copyText(text,label){if(!text){alert('没有可复制的'+label);return}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(function(){alert('已复制'+label)}).catch(function(){fallbackCopy(text,label)})}else fallbackCopy(text,label)}
+function fallbackCopy(text,label){var t=document.createElement('textarea');t.value=text;document.body.appendChild(t);t.select();document.execCommand('copy');document.body.removeChild(t);alert('已复制'+label)}
+function copyAllResult(){copyText(allResult,'全部结果')}
+function copyImages(){copyText(imageResult,'图片直链')}
+function copyVideos(){copyText(videoResult,'视频直链')}
+function fillTest(){document.getElementById('inp').value='/pic/media%2FGwQ4piHXAAA7eCN.jpg%3Fname%3Dsmall\n/pic/video.twimg.com%2Fext_tw_video%2F1948467945136431104%2Fpu%2Fvid%2F720x1280%2FExampleVideo.mp4%3Ftag%3D12\nhttps://video.twimg.com/ext_tw_video/1948467945136431104/pu/vid/320x568/ExampleVideo.mp4?tag=12\nhttps://pbs.twimg.com/ext_tw_video_thumb/1948467945136431104/pu/img/TIR7K_CUAuYGBRtj.jpg';convertLinks()}
+function clearAll(){document.getElementById('inp').value='';document.getElementById('imageOut').textContent='';document.getElementById('videoOut').textContent='';document.getElementById('thumbOut').textContent='';document.getElementById('imagePreview').innerHTML='';document.getElementById('videoPreview').innerHTML='';document.getElementById('stat').textContent='等待输入。';imageResult='';videoResult='';thumbResult='';allResult=''}
+</script>
+</body>
+</html>
