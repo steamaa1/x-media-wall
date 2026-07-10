@@ -1,0 +1,64 @@
+# 图片排除列表
+# 共 51 张；一行一个官方 pbs.twimg.com 直链
+# 过滤时应按 /media/ 后面的 media ID 比较，忽略 format、name 等参数差异。
+
+# 第一批排除（13 张）
+https://pbs.twimg.com/media/GlhdmmjasAAlFPz?format=jpg&name=orig
+https://pbs.twimg.com/media/GlhdkRcagAALYMs?format=jpg&name=orig
+https://pbs.twimg.com/media/Glhdhr1bkAAwKZE?format=jpg&name=orig
+https://pbs.twimg.com/media/GlAcS4NWAAAudxA?format=jpg&name=orig
+https://pbs.twimg.com/media/GlAcS3ubIAAahuG?format=jpg&name=orig
+https://pbs.twimg.com/media/Gzm3lEjbsAAn_mI?format=jpg&name=orig
+https://pbs.twimg.com/media/Gzm3k8XaEAAPHxs?format=jpg&name=orig
+https://pbs.twimg.com/media/Glr40h4bQAA94-E?format=jpg&name=orig
+https://pbs.twimg.com/media/Glr4zWMagAAnhFm?format=jpg&name=orig
+https://pbs.twimg.com/media/Glr4xJnbEAAvZid?format=jpg&name=orig
+https://pbs.twimg.com/media/Glr4yETaUAAkoJI?format=jpg&name=orig
+https://pbs.twimg.com/media/GlAcS4SWwAA3DJd?format=jpg&name=orig
+https://pbs.twimg.com/media/GlhdfrqbIAAFvnA?format=jpg&name=orig
+
+# 第二批排除（3 张）
+https://pbs.twimg.com/media/FuZBD3raUAAgss_?format=jpg&name=orig
+https://pbs.twimg.com/media/FjSlHOfUUAARgeA?format=jpg&name=orig
+https://pbs.twimg.com/media/FjSlG27UoJUhzR5?format=jpg&name=orig
+
+# 本次新增排除（6 张）
+https://pbs.twimg.com/media/HKqdlKOaAAASK82?format=jpg&name=orig
+https://pbs.twimg.com/media/HKqdmo8bwAEEU73?format=jpg&name=orig
+https://pbs.twimg.com/media/HKqdpPEaAAEMMiq?format=jpg&name=orig
+https://pbs.twimg.com/media/HKqdrmhaMAEdzDj?format=jpg&name=orig
+https://pbs.twimg.com/media/HBkxduxbUAU4W5W?format=jpg&name=orig
+https://pbs.twimg.com/media/HBkxciSagAAu4JR?format=jpg&name=orig
+
+# 本次追加排除（25 张）
+https://pbs.twimg.com/media/GyevAdPacAATFoK?format=jpg&name=orig
+https://pbs.twimg.com/media/GyevAXZagAApiL3?format=jpg&name=orig
+https://pbs.twimg.com/media/GyevAdNbgAAIkce?format=jpg&name=orig
+https://pbs.twimg.com/media/GyevAXybYAAfNd7?format=jpg&name=orig
+https://pbs.twimg.com/media/GusQyBEaAAAHhwS?format=jpg&name=orig
+https://pbs.twimg.com/media/GusRCHvXQAANIrD?format=jpg&name=orig
+https://pbs.twimg.com/media/GuiVyDDXwAAQHIy?format=jpg&name=orig
+https://pbs.twimg.com/media/GuiVyCTaoAcYTXe?format=jpg&name=orig
+https://pbs.twimg.com/media/GuiVyDLWEAABdVD?format=jpg&name=orig
+https://pbs.twimg.com/media/GuiU1v3W4AAxX81?format=jpg&name=orig
+https://pbs.twimg.com/media/GuIS2pjXwAAysTz?format=jpg&name=orig
+https://pbs.twimg.com/media/GuIS2pPWkAAHsbX?format=jpg&name=orig
+https://pbs.twimg.com/media/GuIS2pXWQAA84xz?format=jpg&name=orig
+https://pbs.twimg.com/media/GuIS2pLWYAAzzRC?format=jpg&name=orig
+https://pbs.twimg.com/media/Gp0c_vUaYAAZkca?format=jpg&name=orig
+https://pbs.twimg.com/media/Gp0dCbYbQAA80Ng?format=jpg&name=orig
+https://pbs.twimg.com/media/Gp0dFzObUAAlqXU?format=jpg&name=orig
+https://pbs.twimg.com/media/Gp0dHM3bEAATAt-?format=jpg&name=orig
+https://pbs.twimg.com/media/Gm9txhpa8AACVjN?format=jpg&name=orig
+https://pbs.twimg.com/media/Gm9txhnbYAQEmmZ?format=jpg&name=orig
+https://pbs.twimg.com/media/Gm9txhsbYAAoHow?format=jpg&name=orig
+https://pbs.twimg.com/media/Gm9t1OkbYAIArH-?format=jpg&name=orig
+https://pbs.twimg.com/media/GmKoD7xboAE5MGI?format=jpg&name=orig
+https://pbs.twimg.com/media/GmKoE-cagAAZ8oO?format=jpg&name=orig
+https://pbs.twimg.com/media/GmKo6d5bwAAPDtX?format=jpg&name=orig
+
+# @tianzhong_sub 本次新增排除（4 张）
+https://pbs.twimg.com/media/GJLH9bjacAATVcb?format=jpg&name=orig
+https://pbs.twimg.com/media/GQR_lLgbkAAOWJa?format=jpg&name=orig
+https://pbs.twimg.com/media/FrqSCpTacAAdVTr?format=jpg&name=orig
+https://pbs.twimg.com/media/FRBwCUKUUAE_Z8-?format=jpg&name=orig
