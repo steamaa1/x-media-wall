@@ -1,1 +1,364 @@
-<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>X 媒体墙</title><style>*{box-sizing:border-box}body{margin:0;padding:18px;background:#0e0f13;color:#eee;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif}header,.bar,.grid,footer{max-width:1300px;margin:auto}h1{font-size:22px;margin:5px 0}.sub{color:#9aa3b2;font-size:13px;margin-bottom:16px}.bar{position:sticky;top:8px;z-index:5;display:flex;gap:8px;flex-wrap:wrap;align-items:center;padding:11px;background:#171923;border:1px solid #292d3c;border-radius:14px;margin-bottom:14px}button,select{border:1px solid #363b4d;background:#212534;color:#eee;padding:9px 12px;border-radius:9px}button{cursor:pointer}button.on{background:#465c9f}.sp{flex:1}.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}.card{position:relative;overflow:hidden;border-radius:14px;background:#1b1e29;border:1px solid #282d3c;aspect-ratio:3/4}.card img,.card video{width:100%;height:100%;object-fit:cover;display:block}.video .card{aspect-ratio:9/16}.video video{object-fit:contain;background:#050507}.tag{position:absolute;left:7px;bottom:7px;padding:3px 7px;border-radius:12px;background:#000a;font-size:10px}.light{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;background:#000e;padding:18px}.light.show{display:flex}.light img{max-width:100%;max-height:100%;object-fit:contain}.close{position:absolute;right:18px;top:10px;font-size:34px}.nav{position:absolute;top:48%;font-size:40px}.prev{left:15px}.next{right:15px}footer{padding-top:25px;text-align:center;color:#687083;font-size:12px}</style></head><body><header><h1>X 图片和视频媒体墙</h1><div class="sub"><a href="https://x.com/imengyuyzc" style="color:#8eabff">@imengyuyzc</a> + <a href="https://x.com/tianzhong_sub" style="color:#8eabff">@tianzhong_sub</a> · <b id="ic">0</b> 张图片 · <b id="vc">0</b> 个视频</div></header><div class="bar"><button id="all" class="on">全部图片</button><button id="rnd">随机图片</button><button id="vid">视频</button><button data-a="all" class="acct on">全部账号</button><button data-a="imeng" class="acct">@imengyuyzc</button><button data-a="tian" class="acct">@tianzhong_sub</button><select id="n"><option>6</option><option>12</option><option>24</option></select><button id="again">重新随机</button><span class="sp"></span><span id="count"></span></div><div id="grid" class="grid"></div><div id="light" class="light"><span id="close" class="close">×</span><span id="prev" class="nav prev">‹</span><img id="big"><span id="next" class="nav next">›</span></div><footer>媒体直接来源于 pbs.twimg.com / video.twimg.com，版权归原作者所有。</footer><script src="media.js"></script><script>const byId=id=>document.getElementById(id),g=byId('grid'),icEl=byId('ic'),vcEl=byId('vc'),countEl=byId('count'),allBtn=byId('all'),rndBtn=byId('rnd'),vidBtn=byId('vid'),againBtn=byId('again'),numSel=byId('n'),lightEl=byId('light'),bigEl=byId('big'),closeBtn=byId('close'),prevBtn=byId('prev'),nextBtn=byId('next'),A=[...IMAGES.imeng,...IMAGES.tian],tag=new Map([...IMAGES.imeng.map(x=>[x,'@imengyuyzc']),...IMAGES.tian.map(x=>[x,'@tianzhong_sub'])]);let acct='all',mode='all',cur=[],bi=0;icEl.textContent=A.length;vcEl.textContent=VIDEOS.length;function pool(){return acct==='all'?A:IMAGES[acct]}function active(id){document.querySelectorAll('#all,#rnd,#vid').forEach(x=>x.classList.remove('on'));document.querySelector(id).classList.add('on')}function render(a){g.className='grid';g.innerHTML='';cur=a;countEl.textContent=a.length+' 张';a.forEach((u,i)=>{let d=document.createElement('div');d.className='card';let m=u.match(/media\/([^?]+)/),im=new Image;im.loading='lazy';im.src='https://pbs.twimg.com/media/'+m[1]+'?format=jpg&name=medium';im.onclick=()=>open(i);d.append(im);let t=document.createElement('span');t.className='tag';t.textContent=tag.get(u);d.append(t);g.append(d)})}function showAll(){mode='all';active('#all');render([...pool()])}function random(){mode='random';active('#rnd');let a=[...pool()];for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}render(a.slice(0,+numSel.value))}function videos(){mode='video';active('#vid');g.className='grid video';g.innerHTML='';countEl.textContent=VIDEOS.length+' 个';VIDEOS.forEach(u=>{let d=document.createElement('div');d.className='card';let v=document.createElement('video');v.controls=true;v.playsInline=true;v.preload='metadata';v.src=u;d.append(v);g.append(d)})}function open(i){bi=i;bigEl.src=cur[i];lightEl.classList.add('show')}function step(x){bi=(bi+x+cur.length)%cur.length;bigEl.src=cur[bi]}allBtn.onclick=showAll;rndBtn.onclick=random;vidBtn.onclick=videos;againBtn.onclick=random;document.querySelectorAll('.acct').forEach(b=>b.onclick=()=>{acct=b.dataset.a;document.querySelectorAll('.acct').forEach(x=>x.classList.remove('on'));b.classList.add('on');mode==='random'?random():showAll()});closeBtn.onclick=()=>lightEl.classList.remove('show');prevBtn.onclick=()=>step(-1);nextBtn.onclick=()=>step(1);light.onclick=e=>{if(e.target===lightEl)lightEl.classList.remove('show')};document.onkeydown=e=>{if(e.key==='Escape')lightEl.classList.remove('show');if(lightEl.classList.contains('show')&&e.key==='ArrowLeft')step(-1);if(lightEl.classList.contains('show')&&e.key==='ArrowRight')step(1)};showAll();</script></body></html>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>媒体墙 · @imengyuyzc + @tianzhong_sub</title>
+<style>
+  :root{
+    --bg:#0e0f13; --panel:#171923; --text:#e7e9ee; --sub:#9aa3b2;
+    --accent:#7c9cff; --accent-2:#ff8ad0; --radius:16px; --gap:14px;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:radial-gradient(1200px 600px at 80% -10%,#23203a 0%,transparent 60%),var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    min-height:100vh; padding:24px 20px 80px; -webkit-font-smoothing:antialiased;
+  }
+  header{max-width:1300px;margin:0 auto 22px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  header h1{font-size:22px;margin:0;line-height:1.2}
+  header .sub{color:var(--sub);font-size:13px;margin-top:2px}
+  header .sub a{color:var(--accent);text-decoration:none}
+  .avatars{display:flex;gap:8px}
+  .avatars .ava{width:48px;height:48px;border-radius:50%;border:2px solid #2c3050;background-size:cover;background-position:center}
+  .toolbar{
+    max-width:1300px;margin:0 auto 18px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;
+    background:var(--panel);border:1px solid #262a3a;padding:14px 16px;border-radius:var(--radius);
+    position:sticky;top:12px;z-index:20;
+  }
+  .tabs{display:inline-flex;background:#11131c;border-radius:10px;padding:4px;gap:4px;border:1px solid #262a3a}
+  .tabs button{
+    appearance:none;border:0;background:transparent;color:var(--sub);cursor:pointer;
+    padding:9px 16px;border-radius:8px;font-size:14px;font-weight:600;transition:.18s;
+  }
+  .tabs button:hover{color:var(--text)}
+  .tabs button.active{background:linear-gradient(180deg,#2a2f48,#222639);color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.3)}
+  .acct-sel{display:inline-flex;gap:6px;flex-wrap:wrap}
+  .acct-sel button{
+    appearance:none;border:1px solid #313646;background:#11131c;color:var(--sub);cursor:pointer;
+    padding:8px 14px;border-radius:20px;font-size:13px;transition:.15s;
+  }
+  .acct-sel button:hover{color:var(--text);border-color:#4a5266}
+  .acct-sel button.active{background:#222639;color:#fff;border-color:#4a5278}
+  .spacer{flex:1}
+  .count{color:var(--sub);font-size:13px}
+  .count b{color:var(--text)}
+  .btn{
+    appearance:none;border:1px solid #3a412f;background:#1b2417;color:#cfe7b0;cursor:pointer;
+    padding:9px 14px;border-radius:10px;font-size:13px;font-weight:600;transition:.15s;
+  }
+  .btn:hover{background:#222e1d;border-color:#5a7036}
+  .btn.alt{border-color:#3a2f52;background:#221a33;color:#e2c6ff}
+  .btn.alt:hover{background:#2c2142;border-color:#5a3a82}
+  .btn.ghost{background:transparent;border-color:#313646;color:var(--sub)}
+  .btn.ghost:hover{color:var(--text);border-color:#3a412f;background:#171c28}
+  select{background:#11131c;color:var(--text);border:1px solid #313646;border-radius:10px;padding:9px;font-size:13px}
+  .grid{
+    max-width:1300px;margin:0 auto;display:grid;gap:var(--gap);
+    grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  }
+  .card{
+    position:relative;overflow:hidden;border-radius:var(--radius);cursor:zoom-in;
+    background:#1a1d28;border:1px solid #262a3a;aspect-ratio:3/4;
+    transition:transform .2s ease, box-shadow .2s ease, border-color .2s;
+  }
+  .card:hover{transform:translateY(-3px);border-color:#3a412f;box-shadow:0 10px 26px rgba(0,0,0,.45)}
+  .card img{width:100%;height:100%;object-fit:cover;display:block;transition:filter .25s}
+  .video-grid .card{aspect-ratio:9/16;cursor:default}
+  .video-grid .card video{width:100%;height:100%;object-fit:contain;display:block;background:#050507}
+  .video-grid .card:hover{transform:none}
+  .card.loading img{filter:blur(10px) brightness(.6)}
+  .card.error::after{
+    content:"图片加载失败";position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    color:#e5a5a5;background:#25191d;font-size:13px;
+  }
+  .card .tag{
+    position:absolute;left:8px;bottom:8px;background:rgba(0,0,0,.6);color:#fff;font-size:10px;
+    padding:2px 8px;border-radius:20px;backdrop-filter:blur(4px);opacity:0;transition:.2s;
+  }
+  .card:hover .tag{opacity:1}
+  .card .idx{
+    position:absolute;left:8px;top:8px;background:rgba(0,0,0,.55);color:#fff;font-size:11px;
+    padding:2px 8px;border-radius:20px;backdrop-filter:blur(4px);opacity:0;transition:.2s;
+  }
+  .card:hover .idx{opacity:1}
+  .empty{max-width:1300px;margin:40px auto;text-align:center;color:var(--sub)}
+  .lightbox{position:fixed;inset:0;background:rgba(6,7,12,.92);display:none;align-items:center;justify-content:center;z-index:100;padding:24px}
+  .lightbox.show{display:flex}
+  .lightbox img{max-width:100%;max-height:100%;border-radius:12px;box-shadow:0 18px 60px rgba(0,0,0,.6);user-select:none}
+  .lb-close{position:absolute;top:16px;right:22px;font-size:30px;color:#fff;cursor:pointer;line-height:1;opacity:.8}
+  .lb-close:hover{opacity:1}
+  .lb-nav{position:absolute;top:50%;transform:translateY(-50%);font-size:34px;color:#fff;cursor:pointer;opacity:.7;user-select:none}
+  .lb-nav:hover{opacity:1}
+  .lb-prev{left:18px}.lb-next{right:18px}
+  .lb-info{position:absolute;bottom:18px;left:0;right:0;text-align:center;color:var(--sub);font-size:12px}
+  footer{max-width:1300px;margin:30px auto 0;color:#5a6275;font-size:12px;text-align:center}
+  @media(max-width:640px){
+    body{padding:14px 10px 60px}.toolbar{top:6px;padding:10px;gap:8px}.tabs{width:100%}
+    .tabs button{flex:1;padding:8px 6px}.acct-sel{width:100%}.acct-sel button{flex:1;padding:7px 5px}
+    .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.lb-nav{font-size:28px}
+  }
+</style>
+</head>
+<body>
+  <header>
+    <div class="avatars">
+      <div class="ava" style="background-image:url('https://pbs.twimg.com/profile_images/1896043602234785795/jcoKD-Js_200x200.jpg')" title="@imengyuyzc"></div>
+      <div class="ava" style="background-image:url('https://pbs.twimg.com/profile_images/1745740404656672769/6ECJ8xJa_400x400.jpg')" title="@tianzhong_sub"></div>
+    </div>
+    <div>
+      <h1>媒体墙 · 两个账号</h1>
+      <div class="sub">@imengyuyzc + @tianzhong_sub · <b id="total">0</b> 张图片 · <b id="videoTotal">0</b> 个视频 · <a href="https://x.com/imengyuyzc" target="_blank" rel="noopener">imengyuyzc</a> / <a href="https://x.com/tianzhong_sub" target="_blank" rel="noopener">tianzhong_sub</a></div>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="tabs">
+      <button id="tab-all" class="active" type="button">全部图片</button>
+      <button id="tab-random" type="button">随机图片</button>
+      <button id="tab-video" type="button">视频</button>
+    </div>
+    <div class="acct-sel" id="acctSel">
+      <button class="active" data-acct="all" type="button">全部账号</button>
+      <button data-acct="imeng" type="button">@imengyuyzc</button>
+      <button data-acct="tian" type="button">@tianzhong_sub</button>
+    </div>
+    <div class="spacer"></div>
+    <span class="count">显示 <b id="shown">0</b> / <b id="total2">0</b></span>
+    <select id="randCount">
+      <option value="6">随机 6 张</option>
+      <option value="9">随机 9 张</option>
+      <option value="12" selected>随机 12 张</option>
+      <option value="18">随机 18 张</option>
+      <option value="24">随机 24 张</option>
+    </select>
+    <button id="shuffle" class="btn alt" type="button">重新随机</button>
+    <button id="downloadTxt" class="btn ghost" type="button">导出直链</button>
+  </div>
+
+  <div id="grid" class="grid"></div>
+  <div id="videoGrid" class="grid video-grid" style="display:none"></div>
+  <div id="empty" class="empty" style="display:none">暂无媒体</div>
+
+  <div class="lightbox" id="lightbox">
+    <div class="lb-close" id="lbClose" title="关闭 (Esc)">&times;</div>
+    <div class="lb-nav lb-prev" id="lbPrev" title="上一张">&lsaquo;</div>
+    <img id="lbImg" src="" alt="">
+    <div class="lb-nav lb-next" id="lbNext" title="下一张">&rsaquo;</div>
+    <div class="lb-info" id="lbInfo"></div>
+  </div>
+
+  <footer>图片来源于 pbs.twimg.com，视频来源于 video.twimg.com；仅做聚合展示，版权归原作者所有。</footer>
+
+<!-- 媒体数据独立存放，更新图片/视频时无需修改本页面 -->
+<script src="media.js?v=4"></script>
+<script>
+'use strict';
+
+if (typeof IMAGES === 'undefined' || typeof VIDEOS === 'undefined') {
+  document.getElementById('empty').style.display = 'block';
+  document.getElementById('empty').textContent = '媒体数据加载失败，请刷新页面或清除浏览器缓存后重试。';
+  throw new Error('media.js failed to load');
+}
+
+var ALL_IMAGES = IMAGES.imeng.concat(IMAGES.tian);
+var TAG_MAP = {};
+IMAGES.imeng.forEach(function(u){ TAG_MAP[u] = '@imengyuyzc'; });
+IMAGES.tian.forEach(function(u){ TAG_MAP[u] = '@tianzhong_sub'; });
+
+var grid = document.getElementById('grid');
+var videoGrid = document.getElementById('videoGrid');
+var emptyEl = document.getElementById('empty');
+var totalEl = document.getElementById('total');
+var videoTotalEl = document.getElementById('videoTotal');
+var total2El = document.getElementById('total2');
+var shownEl = document.getElementById('shown');
+var tabAll = document.getElementById('tab-all');
+var tabRandom = document.getElementById('tab-random');
+var tabVideo = document.getElementById('tab-video');
+var acctSel = document.getElementById('acctSel');
+var randCountSel = document.getElementById('randCount');
+var shuffleBtn = document.getElementById('shuffle');
+var dlBtn = document.getElementById('downloadTxt');
+
+totalEl.textContent = ALL_IMAGES.length;
+videoTotalEl.textContent = VIDEOS.length;
+total2El.textContent = ALL_IMAGES.length;
+
+var mode = 'all';
+var acct = 'all';
+var current = [];
+
+function thumb(url){
+  var m = url.match(/media\/([A-Za-z0-9_-]+)/);
+  return m ? 'https://pbs.twimg.com/media/' + m[1] + '?format=jpg&name=medium' : url;
+}
+
+function getPool(){
+  if(acct === 'all') return ALL_IMAGES.slice();
+  if(acct === 'imeng') return IMAGES.imeng.slice();
+  return IMAGES.tian.slice();
+}
+
+function render(urls){
+  grid.innerHTML = '';
+  current = urls.slice();
+  shownEl.textContent = urls.length;
+  emptyEl.style.display = urls.length ? 'none' : 'block';
+  urls.forEach(function(u, i){
+    var card = document.createElement('div');
+    card.className = 'card loading';
+    card.setAttribute('data-i', i);
+    var img = new Image();
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.alt = 'image ' + (i+1);
+    img.onload = function(){ card.classList.remove('loading'); };
+    img.onerror = function(){
+      card.classList.remove('loading');
+      card.classList.add('error');
+      img.style.visibility = 'hidden';
+    };
+    img.src = thumb(u);
+    card.appendChild(img);
+    var idx = document.createElement('span');
+    idx.className = 'idx';
+    idx.textContent = (i+1);
+    card.appendChild(idx);
+    var tag = document.createElement('span');
+    tag.className = 'tag';
+    tag.textContent = TAG_MAP[u] || '';
+    card.appendChild(tag);
+    card.addEventListener('click', function(){ openLightbox(i); });
+    grid.appendChild(card);
+  });
+}
+
+function shuffleArr(a){ for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t;} return a; }
+
+function pauseVideos(){
+  videoGrid.querySelectorAll('video').forEach(function(video){ video.pause(); });
+}
+
+function showAll(){
+  pauseVideos();
+  mode = 'all';
+  grid.style.display = 'grid'; videoGrid.style.display = 'none';
+  tabAll.classList.add('active'); tabRandom.classList.remove('active'); tabVideo.classList.remove('active');
+  acctSel.style.display = 'inline-flex'; randCountSel.style.display = ''; shuffleBtn.style.display = '';
+  total2El.textContent = getPool().length;
+  render(getPool());
+}
+function showRandom(){
+  pauseVideos();
+  mode = 'random';
+  grid.style.display = 'grid'; videoGrid.style.display = 'none';
+  tabRandom.classList.add('active'); tabAll.classList.remove('active'); tabVideo.classList.remove('active');
+  acctSel.style.display = 'inline-flex'; randCountSel.style.display = ''; shuffleBtn.style.display = '';
+  var n = parseInt(randCountSel.value, 10) || 12;
+  var pool = shuffleArr(getPool());
+  total2El.textContent = pool.length;
+  render(pool.slice(0, Math.min(n, pool.length)));
+}
+function showVideos(){
+  mode = 'video';
+  grid.style.display = 'none'; videoGrid.style.display = 'grid'; emptyEl.style.display = VIDEOS.length ? 'none' : 'block';
+  tabVideo.classList.add('active'); tabAll.classList.remove('active'); tabRandom.classList.remove('active');
+  acctSel.style.display = 'none'; randCountSel.style.display = 'none'; shuffleBtn.style.display = 'none';
+  shownEl.textContent = VIDEOS.length; total2El.textContent = VIDEOS.length;
+  if (!videoGrid.children.length) {
+    VIDEOS.forEach(function(url, i){
+      var card = document.createElement('div');
+      card.className = 'card';
+
+      var video = document.createElement('video');
+      video.controls = true;
+      video.preload = 'metadata';
+      video.playsInline = true;
+      video.src = url;
+      card.appendChild(video);
+
+      var idx = document.createElement('span');
+      idx.className = 'idx';
+      idx.textContent = i + 1;
+      idx.style.opacity = '1';
+      card.appendChild(idx);
+
+      var tag = document.createElement('span');
+      tag.className = 'tag';
+      tag.textContent = '@imengyuyzc · 视频';
+      tag.style.opacity = '1';
+      card.appendChild(tag);
+
+      videoGrid.appendChild(card);
+    });
+  }
+}
+
+tabAll.addEventListener('click', showAll);
+tabRandom.addEventListener('click', showRandom);
+tabVideo.addEventListener('click', showVideos);
+shuffleBtn.addEventListener('click', showRandom);
+randCountSel.addEventListener('change', function(){ if(mode === 'random') showRandom(); });
+
+acctSel.addEventListener('click', function(e){
+  var btn = e.target.closest('button[data-acct]');
+  if(!btn) return;
+  acct = btn.getAttribute('data-acct');
+  acctSel.querySelectorAll('button').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  if(mode === 'random') showRandom(); else showAll();
+});
+
+dlBtn.addEventListener('click', function(){
+  var pool = mode === 'video' ? VIDEOS.slice() : getPool();
+  var txt = pool.join('\n');
+  var blob = new Blob([txt], {type:'text/plain'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = mode === 'video' ? 'videos_imengyuyzc.txt' : 'images_' + acct + '.txt';
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(function(){ URL.revokeObjectURL(a.href); }, 1000);
+});
+
+var lb = document.getElementById('lightbox');
+var lbImg = document.getElementById('lbImg');
+var lbClose = document.getElementById('lbClose');
+var lbPrev = document.getElementById('lbPrev');
+var lbNext = document.getElementById('lbNext');
+var lbInfo = document.getElementById('lbInfo');
+var lbIndex = 0;
+
+function openLightbox(i){
+  lbIndex = i;
+  updateLightbox();
+  lb.classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeLightbox(){
+  lb.classList.remove('show');
+  lbImg.src = '';
+  document.body.style.overflow = '';
+}
+function updateLightbox(){
+  var u = current[lbIndex];
+  lbImg.src = u;
+  lbInfo.textContent = (lbIndex+1) + ' / ' + current.length + (TAG_MAP[u] ? '  ·  ' + TAG_MAP[u] : '');
+}
+lbClose.addEventListener('click', closeLightbox);
+lbPrev.addEventListener('click', function(e){ e.stopPropagation(); lbIndex=(lbIndex-1+current.length)%current.length; updateLightbox(); });
+lbNext.addEventListener('click', function(e){ e.stopPropagation(); lbIndex=(lbIndex+1)%current.length; updateLightbox(); });
+lb.addEventListener('click', function(e){ if(e.target === lb) closeLightbox(); });
+document.addEventListener('keydown', function(e){
+  if(!lb.classList.contains('show')) return;
+  if(e.key === 'Escape') closeLightbox();
+  else if(e.key === 'ArrowLeft'){ lbIndex=(lbIndex-1+current.length)%current.length; updateLightbox(); }
+  else if(e.key === 'ArrowRight'){ lbIndex=(lbIndex+1)%current.length; updateLightbox(); }
+});
+
+showAll();
+</script>
+</body>
+</html>
