@@ -10,4 +10,4 @@
 
 ## GitHub Pages
 
-由 GitHub Actions 自动部署。
+仓库 Settings → Pages → Source 选择 **GitHub Actions**。
