@@ -11,35 +11,35 @@
 <body>
 <div class="noise" aria-hidden="true"></div>
 <header class="hero" id="top">
-  <nav class="mast"><a class="brand" href="#top">XMW—01</a><span>PERSONAL DIGITAL ARCHIVE</span><span class="mast-date">2026 / CN</span></nav>
+  <nav class="mast"><a class="brand" href="#top">XMW—01</a><span>私人数字影像档案</span><span class="mast-date">2026 / CN</span></nav>
   <div class="hero-grid">
-    <div><p class="eyebrow"><i></i> OPEN ARCHIVE / TWO SOURCES</p><h1><span>X MEDIA</span><span>ARCHIVE</span></h1></div>
-    <div class="hero-meta"><p>来自两个 X 账号的<br>私人媒体收藏。</p><dl><div><dt>IMAGES</dt><dd id="heroImages">000</dd></div><div><dt>MOTION</dt><dd id="heroVideos">00</dd></div><div><dt>SOURCES</dt><dd>02</dd></div></dl></div>
+    <div><p class="eyebrow"><i></i> 开放档案 · 双来源</p><h1><span>X MEDIA</span><span>ARCHIVE</span></h1></div>
+    <div class="hero-meta"><p>来自两个 X 账号的<br>私人影像收藏。</p><dl><div><dt>IMAGES · 图片</dt><dd id="heroImages">000</dd></div><div><dt>MOTION · 影像</dt><dd id="heroVideos">00</dd></div><div><dt>SOURCES · 来源</dt><dd>02</dd></div></dl></div>
   </div>
-  <a class="enter" href="#archive"><span>ENTER ARCHIVE</span><b>↓</b></a>
+  <a class="enter" href="#archive"><span>ENTER ARCHIVE · 进入档案</span><b>↓</b></a>
 </header>
 <main id="archive">
   <div class="archive-head">
-    <div><p class="eyebrow"><i></i> COLLECTION INDEX</p><h2>THE ARCHIVE</h2></div>
-    <p id="resultSummary">LOADING MEDIA INDEX…</p>
+    <div><p class="eyebrow"><i></i> 馆藏索引</p><h2>影像档案</h2></div>
+    <p id="resultSummary">LOADING · 正在载入媒体索引…</p>
   </div>
   <div class="control-wrap">
-    <div class="tabs" role="tablist"><button class="active" data-mode="all">01 / INDEX</button><button data-mode="random">02 / RANDOM</button><button data-mode="video">03 / MOTION</button></div>
-    <div class="filters"><button class="active" data-account="all">ALL <span id="allCount">0</span></button><button data-account="imeng">IMENG <span id="imengCount">0</span></button><button data-account="tian">TIAN <span id="tianCount">0</span></button></div>
-    <div class="views"><button class="active" data-view="flow" aria-label="瀑布流">FLOW</button><button data-view="grid" aria-label="统一网格">GRID</button><button data-view="contact" aria-label="接触表">CONTACT</button></div>
+    <div class="tabs" role="tablist"><button class="active" data-mode="all">01 / INDEX · 索引</button><button data-mode="random">02 / RANDOM · 随机</button><button data-mode="video">03 / MOTION · 视频</button></div>
+    <div class="filters"><button class="active" data-account="all">全部 <span id="allCount">0</span></button><button data-account="imeng">IMENG账号 <span id="imengCount">0</span></button><button data-account="tian">TIAN账号 <span id="tianCount">0</span></button></div>
+    <div class="views"><button class="active" data-view="flow" aria-label="瀑布流">FLOW · 瀑布流</button><button data-view="grid" aria-label="统一网格">GRID · 网格</button><button data-view="contact" aria-label="接触表">CONTACT · 接触表</button></div>
   </div>
   <section class="gallery flow" id="gallery" aria-live="polite"></section>
   <section class="gallery motion" id="motion" hidden></section>
-  <div class="load-zone"><button id="loadMore">LOAD MORE / <span>24</span></button><div id="sentinel"></div></div>
+  <div class="load-zone"><button id="loadMore">LOAD MORE · 加载更多 / <span>24</span></button><div id="sentinel"></div></div>
 </main>
 <button id="toTop" class="to-top" aria-label="返回顶部">↑</button>
 <div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-label="图片查看器" hidden>
-  <header><span id="viewerNo">ARCHIVE 001</span><button id="closeViewer">ESC / CLOSE</button></header>
-  <button class="viewer-nav prev" id="prevImage">← <span>PREV</span></button><figure><div class="viewer-loading">DEVELOPING FRAME…</div><img id="viewerImage" alt=""></figure><button class="viewer-nav next" id="nextImage"><span>NEXT</span> →</button>
-  <footer><div><b id="viewerAccount">@ACCOUNT</b><span id="viewerId">MEDIA ID</span></div><div><button id="copyLink">COPY LINK</button><a id="openOriginal" target="_blank" rel="noopener">OPEN ORIGINAL ↗</a></div><progress id="viewerProgress" max="100" value="0"></progress></footer>
+  <header><span id="viewerNo">ARCHIVE · 档案 001</span><button id="closeViewer">ESC / CLOSE · 关闭</button></header>
+  <button class="viewer-nav prev" id="prevImage">← <span>上一张</span></button><figure><div class="viewer-loading">DEVELOPING · 正在显影…</div><img id="viewerImage" alt=""></figure><button class="viewer-nav next" id="nextImage"><span>下一张</span> →</button>
+  <footer><div><b id="viewerAccount">@账号</b><span id="viewerId">媒体 ID</span></div><div><button id="copyLink">复制链接</button><a id="openOriginal" target="_blank" rel="noopener">打开原图 ↗</a></div><progress id="viewerProgress" max="100" value="0"></progress></footer>
 </div>
-<footer class="site-footer"><div class="footer-mark">XMW—01</div><div>MEDIA VIA X / TWITTER<br>FOR PRIVATE VIEWING</div><div>SUPPORTED BY GPT5.6-SOL<br>FOR ENTERTAINMENT ONLY</div><div>© 2026</div></footer>
+<footer class="site-footer"><div class="footer-mark">XMW—01</div><div>媒体来源 X / TWITTER<br>仅供私人浏览</div><div>由 GPT5.6-SOL 提供支持<br>仅供娱乐</div><div>© 2026</div></footer>
 <script src="media.js?v=6"></script>
-<script src="assets/js/app.js?v=1"></script>
+<script src="assets/js/app.js?v=2"></script>
 </body>
 </html>
