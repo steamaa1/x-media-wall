@@ -1,5 +1,5 @@
 # 图片排除列表
-# 共 51 张；一行一个官方 pbs.twimg.com 直链
+# 共 55 张；一行一个官方 pbs.twimg.com 直链
 # 过滤时应按 /media/ 后面的 media ID 比较，忽略 format、name 等参数差异。
 
 # 第一批排除（13 张）
@@ -62,3 +62,9 @@ https://pbs.twimg.com/media/GJLH9bjacAATVcb?format=jpg&name=orig
 https://pbs.twimg.com/media/GQR_lLgbkAAOWJa?format=jpg&name=orig
 https://pbs.twimg.com/media/FrqSCpTacAAdVTr?format=jpg&name=orig
 https://pbs.twimg.com/media/FRBwCUKUUAE_Z8-?format=jpg&name=orig
+
+# 本次新增排除（4 张）
+https://pbs.twimg.com/media/GlH9WXSagAA_-xd?format=jpg&name=medium
+https://pbs.twimg.com/media/GlH9jdgbcAAjYQ-?format=jpg&name=medium
+https://pbs.twimg.com/media/GlH-lVxbUAEhSWw?format=jpg&name=medium
+https://pbs.twimg.com/media/GlH-ngBakAE3c9f?format=jpg&name=medium
