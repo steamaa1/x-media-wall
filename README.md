@@ -1,4 +1,4 @@
-# X Media Wall（自用）
+# X Media Wall
 
 静态 X/Twitter 图片和视频媒体墙。
 
