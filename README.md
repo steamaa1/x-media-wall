@@ -11,3 +11,7 @@
 ## GitHub Pages
 
 仓库 Settings → Pages → Source 选择 **GitHub Actions**。
+
+---
+
+**本项目由GPT5.6-sol提供支持，仅供娱乐**
